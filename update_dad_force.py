@@ -1,4 +1,4 @@
-from koop_db import read_traffic, traffic_week_order, cli_startday
+from koop_db import read_traffic, traffic_week_order, traffic_week_of_date, cli_startday
 from verify_utils import getdates
 from datetime import datetime
 from os.path import exists
@@ -11,11 +11,11 @@ def update_dad(startday):
         on_prod = True
 
     ascii_traffic = read_traffic()
-    weekof = ascii_traffic[1][2]
-
-    (start_month,start_day,start_year) = weekof.split('/')
-
-    weekof_dt = datetime(int(start_year), int(start_month), int(start_day))
+    weekof_date = traffic_week_of_date(ascii_traffic)
+    if weekof_date is None:
+        print("\nError! ==> No 'Week of' date found in the traffic CSV.\n")
+        return False
+    weekof_dt = datetime.combine(weekof_date, datetime.min.time())
 
 
     dates = getdates(ascii_traffic)

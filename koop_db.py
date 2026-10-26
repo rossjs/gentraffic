@@ -8,6 +8,8 @@ import difflib
 import copy
 import dbf
 import json
+import datetime
+import re
 
 from itertools import repeat
 from difflib import SequenceMatcher
@@ -513,6 +515,22 @@ def traffic_week_order(traffic_rows):
         raise ValueError("traffic CSV day-name row must list each weekday exactly once "
                          "in columns 3-9, got: %s" % ', '.join(week_order))
     return week_order
+
+def traffic_week_of_date(traffic_rows):
+    """The traffic CSV's "Week of" date, or None if there isn't one.
+
+    Accepts the date in the label's own cell ("Week of: 8/24/2026") or in a
+    following cell ("Week of:", "8/24/2026").
+    """
+    for row in traffic_rows:
+        for i, cell in enumerate(row):
+            if 'week of' in cell.lower():
+                for candidate in row[i:]:
+                    match = re.search(r'\d{1,2}/\d{1,2}/\d{4}', candidate)
+                    if match:
+                        return datetime.datetime.strptime(match.group(), '%m/%d/%Y').date()
+                return None
+    return None
 
 def cli_startday(args):
     """Start day from the command line, defaulting to the traffic week's first day."""

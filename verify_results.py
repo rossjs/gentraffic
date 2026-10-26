@@ -1,6 +1,6 @@
 from os.path import exists
 from os  import chdir
-from koop_db import get_records_from_dbf, read_traffic, list2file, mylower
+from koop_db import get_records_from_dbf, read_traffic, list2file, mylower, traffic_week_of_date
 from verify_utils import getdates, test_playlist, get_weeklytraffic, get_playlist
 from difflib import ndiff
 from subprocess import call
@@ -19,7 +19,7 @@ def verify_results():
         cut_records = get_records_from_dbf('inputfiles/cuts.dbf')
     
     ascii_traffic = read_traffic()
-    weekof = ascii_traffic[1][2]
+    weekof = traffic_week_of_date(ascii_traffic)
     
     print("VerifyResults now running and verifying traffic for week of:",weekof,"\n")
     dates = getdates(ascii_traffic)
